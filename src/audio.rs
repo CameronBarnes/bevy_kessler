@@ -1,5 +1,7 @@
 use bevy::prelude::*;
 
+use crate::screens::Screen;
+
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<Music>();
     app.register_type::<SoundEffect>();
@@ -8,6 +10,10 @@ pub(super) fn plugin(app: &mut App) {
         Update,
         apply_global_volume.run_if(resource_changed::<GlobalVolume>),
     );
+
+    app.add_observer(on_start_music);
+    app.add_observer(on_next_song);
+    app.add_observer(on_music_removed);
 }
 
 /// An organizational marker component that should be added to a spawned [`AudioPlayer`] if it's in the
@@ -20,7 +26,73 @@ pub struct Music;
 
 /// A music audio instance.
 pub fn music(handle: Handle<AudioSource>) -> impl Bundle {
-    (AudioPlayer(handle), PlaybackSettings::LOOP, Music)
+    (
+        AudioPlayer(handle),
+        PlaybackSettings::DESPAWN,
+        Music,
+        StateScoped(Screen::Gameplay),
+    )
+}
+
+/// Stores a list of music to play and an index for the current song
+#[derive(Component, Reflect)]
+#[reflect(Component)]
+pub struct Playlist {
+    music: Vec<Handle<AudioSource>>,
+    index: usize,
+}
+
+impl Playlist {
+    /// Creates a new playlist of music
+    pub fn new(handles: Vec<Handle<AudioSource>>) -> Self {
+        info!("Creating new playlist");
+        Self {
+            music: handles,
+            index: 0,
+        }
+    }
+}
+
+#[derive(Event)]
+pub struct StartMusic;
+
+fn on_start_music(
+    _trigger: Trigger<StartMusic>,
+    mut commands: Commands,
+    mut playlist_query: Query<&mut Playlist>,
+) {
+    if let Ok(mut playlist) = playlist_query.single_mut() {
+        playlist.index = usize::MAX;
+        commands.trigger(NextSong);
+        info!("Starting music!");
+    }
+}
+
+#[derive(Event)]
+pub struct NextSong;
+
+fn on_next_song(
+    _trigger: Trigger<NextSong>,
+    mut commands: Commands,
+    mut playlist_query: Query<&mut Playlist>,
+) {
+    if let Ok(mut playlist) = playlist_query.single_mut() {
+        if playlist.index >= playlist.music.len() {
+            playlist.index = 0;
+        }
+        info!("Next song!");
+        commands.spawn(music(playlist.music[playlist.index].clone()));
+    }
+}
+
+fn on_music_removed(
+    _trigger: Trigger<OnRemove, Music>,
+    mut commands: Commands,
+    state: Res<State<Screen>>,
+) {
+    if matches!(state.get(), Screen::Gameplay) {
+        commands.trigger(NextSong);
+    }
 }
 
 /// An organizational marker component that should be added to a spawned [`AudioPlayer`] if it's in the

@@ -1,4 +1,4 @@
 # Bevy Kessler
 
-This project was generated using the [Bevy New 2D](https://github.com/TheBevyFlock/bevy_new_2d) template.
-Check out the [documentation](https://github.com/TheBevyFlock/bevy_new_2d/blob/main/README.md) to get started!
+An Entry for Bevy Jam #6 with the theme 'Chain Reaction'
+Game mechanics are designed around and inspired by the concept of Kessler Syndrome.

@@ -5,7 +5,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-bevy = { version = "0.16", features = ["wayland"] }
+bevy = { version = "0.16", features = ["wayland", "mp3"] }
 rand = "0.8"
 # Compile low-severity logs out of native builds for performance.
 log = { version = "0.4", features = [
@@ -103,7 +103,7 @@ debug-assertions = false
 codegen-units = 1
 # Do a second optimization pass over the entire program, including dependencies.
 # Slows compile times, marginal improvements.
-lto = "thin"
+lto = "fat"
 
 # This profile will be used by `bevy run web` automatically.
 [profile.web-release]
