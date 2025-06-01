@@ -5,9 +5,10 @@ use bevy::prelude::*;
 use crate::{
     asset_tracking::LoadResource,
     audio::{Playlist, StartMusic},
-    demo::player::{player, PlayerAssets},
     screens::Screen,
 };
+
+use super::planet::{planet, PlanetAssets};
 
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<LevelAssets>();
@@ -39,7 +40,7 @@ impl FromWorld for LevelAssets {
 pub fn spawn_level(
     mut commands: Commands,
     level_assets: Res<LevelAssets>,
-    player_assets: Res<PlayerAssets>,
+    planet_assets: Res<PlanetAssets>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
 ) {
     commands.spawn((
@@ -48,7 +49,7 @@ pub fn spawn_level(
         Visibility::default(),
         StateScoped(Screen::Gameplay),
         children![
-            player(400.0, &player_assets, &mut texture_atlas_layouts),
+            planet(&planet_assets, &mut texture_atlas_layouts),
             (
                 Name::new("Gameplay Music Playlist"),
                 Playlist::new(level_assets.music.clone())
