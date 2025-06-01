@@ -41,10 +41,14 @@ pub fn header(text: impl Into<String>) -> impl Bundle {
 
 /// A simple text label.
 pub fn label(text: impl Into<String>) -> impl Bundle {
+    label_with_size(text, 24.0)
+}
+
+pub fn label_with_size(text: impl Into<String>, size: f32) -> impl Bundle {
     (
         Name::new("Label"),
         Text(text.into()),
-        TextFont::from_font_size(24.0),
+        TextFont::from_font_size(size),
         TextColor(LABEL_TEXT),
     )
 }

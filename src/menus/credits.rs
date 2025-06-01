@@ -34,21 +34,38 @@ fn spawn_credits_menu(mut commands: Commands) {
 }
 
 fn created_by() -> impl Bundle {
-    grid(vec![
-        ["Cameron Barnes", "Developer"],
-    ])
+    grid(vec![["Cameron Barnes", "Developer"]])
 }
 
 fn assets() -> impl Bundle {
     grid(vec![
         ["Ducky sprite", "CC0 by Caz Creates Games"],
         ["Button SFX", "CC0 by Jaszunio15"],
+        [
+            "Planet Sprites",
+            "Made With Pixel Planet Generator by Deep-Fold on Itch",
+        ],
         ["- Music -", ""],
-        ["Impact Prelude", "CC BY 3.0 by Kevin MacLeod, Free Music Archive"],
-        ["Impact Andante", "CC BY 3.0 by Kevin MacLeod, Free Music Archive"],
-        ["Impact Moderato", "CC BY 3.0 by Kevin MacLeod, Free Music Archive"],
-        ["Impact Lento", "CC BY 3.0 by Kevin MacLeod, Free Music Archive"],
-        ["Inner Light", "CC BY 3.0 by Kevin MacLeod, Free Music Archive"],
+        [
+            "Impact Prelude",
+            "CC BY 3.0 by Kevin MacLeod, Free Music Archive",
+        ],
+        [
+            "Impact Andante",
+            "CC BY 3.0 by Kevin MacLeod, Free Music Archive",
+        ],
+        [
+            "Impact Moderato",
+            "CC BY 3.0 by Kevin MacLeod, Free Music Archive",
+        ],
+        [
+            "Impact Lento",
+            "CC BY 3.0 by Kevin MacLeod, Free Music Archive",
+        ],
+        [
+            "Inner Light",
+            "CC BY 3.0 by Kevin MacLeod, Free Music Archive",
+        ],
         ["- Bevy -", ""],
         [
             "Bevy logo",
@@ -70,7 +87,7 @@ fn grid(content: Vec<[&'static str; 2]>) -> impl Bundle {
         Children::spawn(SpawnIter(content.into_iter().flatten().enumerate().map(
             |(i, text)| {
                 (
-                    widget::label(text),
+                    widget::label_with_size(text, 20.),
                     Node {
                         justify_self: if i % 2 == 0 {
                             JustifySelf::End
