@@ -1,6 +1,9 @@
 //! Spawn the main level.
 
-use bevy::prelude::*;
+use bevy::{
+    image::{ImageLoaderSettings, ImageSampler},
+    prelude::*,
+};
 
 use crate::{
     asset_tracking::LoadResource,
@@ -8,7 +11,10 @@ use crate::{
     screens::Screen,
 };
 
-use super::planet::{PlanetAssets, planet};
+use super::{
+    asteroids::{AsteroidAssets, AsteroidSize, asteroid},
+    planet::{PlanetAssets, planet},
+};
 
 pub(super) fn plugin(app: &mut App) {
     app.register_type::<LevelAssets>();
@@ -20,6 +26,8 @@ pub(super) fn plugin(app: &mut App) {
 pub struct LevelAssets {
     #[dependency]
     music: Vec<Handle<AudioSource>>,
+    #[dependency]
+    background: Handle<Image>,
 }
 
 impl FromWorld for LevelAssets {
@@ -32,6 +40,13 @@ impl FromWorld for LevelAssets {
                 assets.load("audio/music/03 Kevin MacLeod - Impact Moderato.mp3"),
                 assets.load("audio/music/06 Kevin MacLeod - Impact Lento.mp3"),
             ],
+            background: assets.load_with_settings(
+                "images/Space Background.png",
+                |settings: &mut ImageLoaderSettings| {
+                    // Use `nearest` image sampling to preserve pixel art style.
+                    settings.sampler = ImageSampler::nearest();
+                },
+            ),
         }
     }
 }
@@ -42,6 +57,7 @@ pub fn spawn_level(
     level_assets: Res<LevelAssets>,
     planet_assets: Res<PlanetAssets>,
     mut texture_atlas_layouts: ResMut<Assets<TextureAtlasLayout>>,
+    asteroid_res: Res<AsteroidAssets>,
 ) {
     commands.spawn((
         Name::new("Level"),
@@ -53,6 +69,23 @@ pub fn spawn_level(
             (
                 Name::new("Gameplay Music Playlist"),
                 Playlist::new(level_assets.music.clone())
+            ),
+            asteroid(
+                AsteroidSize::Large,
+                0.,
+                300.,
+                50.,
+                asteroid_res.get_sprite(AsteroidSize::Large)
+            ),
+            (
+                Name::new("Background Image"),
+                Sprite {
+                    image: level_assets.background.clone(),
+                    image_mode: SpriteImageMode::Scale(ScalingMode::FillCenter),
+                    custom_size: Some(Vec2::new(3840., 2160.)),
+                    ..Default::default()
+                },
+                Transform::from_xyz(0., 0., -1.),
             )
         ],
     ));

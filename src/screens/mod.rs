@@ -6,6 +6,7 @@ mod splash;
 mod title;
 
 use bevy::prelude::*;
+pub use splash::SPLASH_BACKGROUND_COLOR;
 
 pub(super) fn plugin(app: &mut App) {
     app.init_state::<Screen>();

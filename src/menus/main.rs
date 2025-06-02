@@ -2,13 +2,19 @@
 
 use bevy::prelude::*;
 
-use crate::{asset_tracking::ResourceHandles, menus::Menu, screens::Screen, theme::widget};
+use crate::{
+    asset_tracking::ResourceHandles,
+    menus::Menu,
+    screens::{SPLASH_BACKGROUND_COLOR, Screen},
+    theme::widget,
+};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Menu::Main), spawn_main_menu);
 }
 
-fn spawn_main_menu(mut commands: Commands) {
+fn spawn_main_menu(mut commands: Commands, mut clear_color: ResMut<ClearColor>) {
+    clear_color.0 = SPLASH_BACKGROUND_COLOR;
     commands.spawn((
         widget::ui_root("Main Menu"),
         GlobalZIndex(2),
@@ -33,7 +39,9 @@ fn enter_loading_or_gameplay_screen(
     _: Trigger<Pointer<Click>>,
     resource_handles: Res<ResourceHandles>,
     mut next_screen: ResMut<NextState<Screen>>,
+    mut clear_color: ResMut<ClearColor>,
 ) {
+    clear_color.0 = Color::BLACK;
     if resource_handles.is_all_done() {
         next_screen.set(Screen::Gameplay);
     } else {
